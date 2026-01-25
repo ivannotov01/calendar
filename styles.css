@@ -355,7 +355,6 @@ input.dateInput::-webkit-calendar-picker-indicator{ opacity:0.9; }
   pointer-events:none;
   z-index:1;
 }
-.daycell > *{ position: relative; z-index:2; }
 /* Slight translucent gray cards for better separation */
 
 #vacationModal .modal-card,
@@ -466,3 +465,8 @@ input.dateInput::-webkit-calendar-picker-indicator{ opacity:0.9; }
 
 /* --- Today highlight: top half only --- */
 .daycell
+
+/* --- ensure today overlay does not affect layout --- */
+.daycell .daynum{ position:relative; z-index:2; }
+.daycell .icons{ z-index:2; } /* already absolute */
+.daycell .bdayMark{ z-index:2; } /* keep top-right */
