@@ -435,3 +435,18 @@ input.dateInput::-webkit-calendar-picker-indicator{ opacity:0.9; }
 }
 
 #emojiFrequent:empty{ display:none; }
+
+
+/* --- Calendar event icons scale (x1.3) --- */
+.daycell .icons .eventIcon{
+  width:21px;
+  height:21px;
+  vertical-align:-3px;
+}
+.daycell .icons .eventIcon.small{
+  width:21px;
+  height:21px;
+}
+.daycell.tail .icons .eventIcon{
+  opacity:0.35; /* keep muted tails behavior */
+}
