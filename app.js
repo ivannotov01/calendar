@@ -364,6 +364,10 @@ window.__APP_OK__ = true;
     if (monthPicker.classList.contains('hidden') && yearPicker.classList.contains('hidden')) hideBackdrop();
   }
   overlayBackdrop.addEventListener('click', () => { closeOverlay(monthPicker); closeOverlay(yearPicker); closeOverlay(datePickerModal); });
+  // Close overlays when tapping outside the card (on the overlay itself)
+  monthPicker.addEventListener('click', (e) => { if (e.target === monthPicker) closeOverlay(monthPicker); });
+  yearPicker.addEventListener('click', (e) => { if (e.target === yearPicker) closeOverlay(yearPicker); });
+
   datePickerModal.addEventListener('click', (e) => { if (e.target === datePickerModal) closeOverlay(datePickerModal); });
 
   // --- Modal helpers ---
