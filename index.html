@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<meta content="#0B0B0D" name="theme-color"/>
+<link href="manifest.json" rel="manifest"/>
+<link href="icons/icon-192.png" rel="icon"/>
+<title>Календарь</title>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="Календарь" name="apple-mobile-web-app-title"/>
+<link href="styles.css" rel="stylesheet"/>
+<link href="icons/icon-180.png?v=5fix35" rel="apple-touch-icon" sizes="180x180"/>
+<link href="icons/icon-167.png?v=5fix35" rel="apple-touch-icon" sizes="167x167"/>
+<link href="icons/icon-152.png?v=5fix35" rel="apple-touch-icon" sizes="152x152"/>
+<link href="icons/icon-120.png?v=5fix35" rel="apple-touch-icon" sizes="120x120"/>
+</head>
+<body>
+<div class="app" id="app">
+<header class="topbar">
+<button aria-label="Месяц назад" class="nav-btn" id="prevMonth">←</button>
+<button aria-label="Выбрать месяц" class="month-btn" id="monthBtn"><span id="monthLabel"></span></button>
+<button aria-label="Месяц вперёд" class="nav-btn" id="nextMonth">→</button>
+<button aria-label="Выбрать год" class="year-btn" id="yearBtn"><span id="yearLabel"></span></button>
+<button aria-label="К текущей дате" class="home-btn" id="homeBtn">⌂</button>
+</header>
+<main class="main">
+<section class="calendar">
+<div class="dow">
+<div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+</div>
+<div aria-label="Календарь месяца" class="grid" id="grid"></div>
+</section>
+<section class="daypanel">
+<div class="daypanel-header">
+<div class="day-title" id="dayTitle"></div>
+<div class="daypanel-actions">
+<button aria-label="Добавить событие" class="icon-btn" id="addBtn">+</button>
+<button aria-label="Настройки" class="icon-btn" id="settingsBtn">⚙︎</button>
+</div>
+</div>
+<div class="daylist" id="dayList"></div>
+</section>
+</main>
+<!-- Backdrop for month/year overlays -->
+<div class="overlay-backdrop hidden" id="overlayBackdrop"></div>
+<div aria-label="Выбор месяца" class="overlay hidden" id="monthPicker" role="dialog">
+<div class="overlay-card">
+<div class="months-grid" id="monthsGrid"></div>
+</div>
+</div>
+<div aria-label="Выбор года" class="overlay hidden" id="yearPicker" role="dialog">
+<div class="overlay-card year-card">
+<div class="year-list" id="yearList"></div>
+</div>
+</div>
+<!-- Event modal -->
+<div aria-label="Событие" class="modal hidden" id="eventModal" role="dialog">
+<div class="modal-card">
+<div class="modal-top">
+<button class="text-btn outline-btn" id="cancelEventBtn">Отменить</button>
+<div class="modal-title" id="eventModalTitle">Новое событие</div>
+<div style="width:72px;"></div>
+</div>
+<div class="row">
+<button aria-label="Выбрать смайлик" class="pill emoji-pill" id="emojiBtn"><span id="emojiPreview">🙂</span></button>
+<input autocomplete="off" class="pill title-input" id="titleInput" placeholder="Название" type="text"/>
+<button aria-label="Выбрать цвет" class="pill color-pill" id="colorBtn"><span id="colorPreview"></span></button>
+</div>
+<div class="row row2">
+<button aria-label="Дата" class="pill date-pill" id="startDateBtn">19.01.2026</button>
+<button aria-label="Добавить период" class="pill add-range-pill" id="addRangeBtn">＋</button>
+<button aria-label="Дата по" class="pill date-pill hidden" id="endDateBtn">По: 20.01.2026</button>
+<input aria-label="Время с какого" class="pill time-input" id="timeInput" type="time"/>
+</div>
+<div class="row endInputRow hidden" id="endInputRow"><input aria-label="Дата окончания" class="pill date-pill dateInput" id="endDateInput" type="date"/></div>
+<button class="primary-btn" id="saveEventBtn">Добавить</button>
+</div>
+</div>
+<!-- Emoji picker -->
+<div aria-label="Выбор смайлика" class="modal hidden" id="emojiPicker" role="dialog">
+<div class="modal-card">
+<div class="modal-top">
+<button class="text-btn outline-btn" id="closeEmojiBtn">Закрыть</button>
+<div class="modal-title">Смайлик</div>
+<div style="width:72px;"></div>
+</div>
+<div class="emoji-section">
+<div class="section-title">Частые</div>
+<div class="emoji-grid" id="emojiFrequent"></div>
+</div>
+<div class="emoji-section">
+<div class="section-title">Все</div>
+<div class="emoji-grid" id="emojiAll"></div>
+</div>
+</div>
+</div>
+<!-- Color picker -->
+<div aria-label="Выбор цвета" class="modal hidden" id="colorPicker" role="dialog">
+<div class="modal-card">
+<div class="modal-top">
+<button class="text-btn outline-btn" id="closeColorBtn">Закрыть</button>
+<div class="modal-title">Цвет</div>
+<div style="width:72px;"></div>
+</div>
+<div class="color-grid" id="colorGrid"></div>
+</div>
+</div>
+<!-- Settings -->
+<div aria-label="Настройки" class="modal hidden" id="settingsModal" role="dialog">
+<div class="modal-card">
+<div class="modal-top">
+<button class="text-btn outline-btn" id="closeSettingsBtn">Закрыть</button>
+<div class="modal-title">Настройки</div>
+<div style="width:72px;"></div>
+</div>
+<div class="settings">
+<div class="settings-group">
+<div class="settings-item">
+<div class="settings-label">Дни рождения</div>
+<button class="settings-link" id="birthdaysBtn">Открыть</button>
+</div>
+<div class="settings-item">
+<div class="settings-label">Отпуска</div>
+<button class="settings-link" id="vacationsBtn">Открыть</button>
+</div>
+</div>
+<div class="settings-group">
+<div class="settings-item">
+<div class="settings-label">Линии сетки</div>
+<div class="segmented">
+<button class="seg-btn" data-gridline="white">Белые</button>
+<button class="seg-btn" data-gridline="gray">Серые</button>
+</div>
+</div>
+</div>
+<div class="settings-group">
+<div class="settings-item">
+<div class="settings-label">Выборка по событиям</div>
+<button class="settings-link" id="searchBtn">Открыть</button>
+</div>
+<div class="settings-item">
+<div class="settings-label">Прошедшие (скрытые)</div>
+<button class="settings-link" id="hiddenBtn">Открыть</button>
+</div>
+</div>
+<div class="settings-group">
+
+<div class="settings-item">
+  <div class="settings-label">Экспорт / Импорт</div>
+  <div class="settings-btnrow">
+    <button class="pill outline-btn" id="exportBtn">Экспорт</button>
+    <button class="pill outline-btn" id="importBtn">Импорт</button>
+    <input type="file" id="importInput" accept="application/json" style="display:none" />
+  </div>
+</div>
+
+<div class="settings-group">
+<div class="settings-item">
+<div class="settings-label">О приложении</div>
+<button class="settings-link" id="aboutBtn">Открыть</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Search -->
+<div aria-label="Выборка по событиям" class="modal hidden" id="searchModal" role="dialog">
+<div class="modal-card">
+<div class="modal-top">
+<button class="text-btn outline-btn" id="closeSearchBtn">Закрыть</button>
+<div class="modal-title">Выборка</div>
+<div style="width:72px;"></div>
+</div>
+<div class="search-bar">
+<button aria-label="Смайлик для фильтра" class="pill emoji-pill" id="searchEmojiBtn"><span id="searchEmojiPreview">🔎</span></button>
+<input autocomplete="off" class="pill search-input" id="searchInput" placeholder="Начни писать название…" type="text"/>
+<button aria-label="Сброс" class="pill clear-pill" id="clearSearchBtn">×</button>
+</div>
+<div class="list" id="searchList"></div>
+</div>
+</div>
+<!-- Hidden -->
+<div aria-label="Прошедшие (скрытые)" class="modal hidden" id="hiddenModal" role="dialog">
+<div class="modal-card">
+<div class="modal-top">
+<button class="text-btn outline-btn" id="closeHiddenBtn">Закрыть</button>
+<div class="modal-title">Прошедшие</div>
+<div style="width:72px;"></div>
+</div>
+<div class="list" id="hiddenList"></div>
+</div>
+</div>
+<!-- Birthdays -->
+<div aria-label="Дни рождения" class="modal hidden" id="birthdaysModal" role="dialog">
+<div class="modal-card">
+<div class="modal-top">
+<button class="text-btn outline-btn" id="closeBirthdaysBtn">Закрыть</button>
+<div class="modal-title">Дни рождения</div>
+<div style="width:72px;"></div>
+</div>
+<div class="birthdays-top">
+<button class="primary-btn small" id="addBirthdayBtn">Добавить</button>
+</div>
+<div class="list" id="birthdaysList"></div>
+</div>
+</div>
+<!-- Birthday editor -->
+<div aria-label="День рождения" class="modal hidden" id="birthdayModal" role="dialog">
+<div class="modal-card">
+<div class="modal-top">
+<button class="text-btn outline-btn" id="cancelBirthdayBtn">Отменить</button>
+<div class="modal-title" id="birthdayModalTitle">День рождения</div>
+<div style="width:72px;"></div>
+</div>
+<div class="birthday-form">
+<input autocomplete="off" class="pill title-input" id="bdayNameInput" placeholder="Имя" type="text"/>
+<input class="pill" id="bdayDateInput" type="date"/>
+<div class="hint">Если дата 29.02 — в не високосные годы будет 28.02.</div>
+</div>
+<button class="primary-btn" id="saveBirthdayBtn">Сохранить</button>
+</div>
+</div>
+<!-- About -->
+<div aria-label="О приложении" class="modal hidden" id="aboutModal" role="dialog">
+<div class="modal-card">
+<div class="modal-top">
+<button class="text-btn outline-btn" id="closeAboutBtn">Закрыть</button>
+<div class="modal-title">О приложении</div>
+<div style="width:72px;"></div>
+</div>
+<div class="about">
+<div class="about-title">Календарь</div>
+<div class="about-text">
+            Минималистичный календарь на месяц с быстрым добавлением событий, ручными днями рождения и удобной выборкой.
+          </div>
+<div class="about-row"><span>Версия</span><span>1.0</span></div>
+<div class="about-row"><span>Поддержка</span><a href="mailto:ivangpt1337@gmail.com">ivangpt1337@gmail.com</a></div>
+<div class="about-text small">
+            Данные хранятся локально на устройстве. Экспорт/импорт — только по вашему действию.
+          </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Vacations -->
+<div aria-label="Отпуска" class="modal hidden" id="vacationsModal" role="dialog">
+<div class="modal-card">
+<div class="modal-top">
+<button class="text-btn outline-btn" id="closeVacationsBtn">Закрыть</button>
+<div class="modal-title">Отпуска</div>
+<div style="width:72px;"></div>
+</div>
+<div class="birthdays-top" style="display:flex; justify-content:space-between; align-items:center;">
+<button class="primary-btn small" id="addVacationBtn">Добавить</button>
+<div style="display:flex; gap:8px;">
+<button aria-label="Год назад" class="nav-btn" id="vacYearPrev">←</button>
+<button aria-label="Год" class="year-btn" id="vacYearBtn"><span id="vacYearLabel"></span></button>
+<button aria-label="Год вперед" class="nav-btn" id="vacYearNext">→</button>
+</div>
+</div>
+<div class="list" id="vacationsList"></div>
+</div>
+</div>
+<div aria-label="Отпуск" class="modal hidden" id="vacationModal" role="dialog">
+<div class="modal-card">
+<div class="modal-top">
+<button class="text-btn outline-btn" id="cancelVacationBtn">Отменить</button>
+<div class="modal-title" id="vacationModalTitle">Отпуск</div>
+<div style="width:72px;"></div>
+</div>
+<div class="row" id="vacDateInputs">
+<div class="date-wrap">
+<span class="date-label">С:</span>
+<input aria-label="С" class="pill date-pill dateInput" id="vacStartInput" type="date"/>
+</div>
+<div class="date-wrap">
+<span class="date-label">По:</span>
+<input aria-label="По" class="pill date-pill dateInput" id="vacEndInput" type="date"/>
+</div>
+</div>
+<div class="row">
+<button class="pill date-pill" id="vacStartBtn">С: 19.01.2026</button>
+<button class="pill date-pill" id="vacEndBtn">По: 20.01.2026</button>
+</div>
+<button class="primary-btn" id="saveVacationBtn">Сохранить</button>
+</div>
+</div>
+<!-- Date picker (custom dark) -->
+<div aria-label="Выбор даты" class="overlay hidden" id="datePickerModal" role="dialog">
+<div class="overlay-card">
+<div class="datepick-top">
+<button aria-label="Месяц назад" class="nav-btn" id="dpPrev">←</button>
+<div class="datepick-title">
+<span id="dpMonthLabel"></span> <span id="dpYearLabel"></span>
+</div>
+<button aria-label="Месяц вперед" class="nav-btn" id="dpNext">→</button>
+</div>
+<div class="dow">
+<div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+</div>
+<div aria-label="Календарь выбора даты" class="grid" id="dpGrid"></div>
+</div>
+</div>
+<script src="app.js?v=5fix35"></script>
+</body>
+</html>
