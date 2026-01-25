@@ -353,7 +353,10 @@ input.dateInput::-webkit-calendar-picker-indicator{ opacity:0.9; }
   background: rgba(180,180,180,0.18);
   border-radius:6px 6px 0 0;
   pointer-events:none;
+  z-index:1;
 }
+.daycell > *{ position: relative; z-index:2; }
+
 
 
 /* Slight translucent gray cards for better separation */
@@ -473,4 +476,12 @@ input.dateInput::-webkit-calendar-picker-indicator{ opacity:0.9; }
     transparent 50%,
     transparent 100%
   ) !important;
+}
+
+/* --- Today overlay variants --- */
+.daycell.today.hilite::before{
+  background: rgba(255,174,168,0.45); /* насыщеннее красный для выходных/нерабочих */
+}
+.daycell.today.vac::before{
+  background: rgba(144,238,144,0.42); /* насыщеннее зеленый для отпуска */
 }
