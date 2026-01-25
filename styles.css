@@ -343,7 +343,6 @@ input.dateInput::-webkit-calendar-picker-indicator{ opacity:0.9; }
 
 /* Today: highlight whole cell */
 .daycell.daycell.today{ background: none; }
-.daycell.today{ background: none; }
 .daycell.today::before{
   content:"";
   position:absolute;
@@ -351,14 +350,12 @@ input.dateInput::-webkit-calendar-picker-indicator{ opacity:0.9; }
   right:1px;
   top:1px;
   height:50%;
-  background: rgba(180,180,180,0.18); /* будний серый */
+  background: rgba(180,180,180,0.18);
   border-radius:6px 6px 0 0;
   pointer-events:none;
-  z-index:1;
 }
-.daycell.today.hilite::before{ background: rgba(255,174,168,0.45); } /* выходной/нерабочий красный */
-.daycell.today.vac::before{ background: rgba(144,238,144,0.42); } /* отпуск зеленый */
-.daycell > *{ position: relative; z-index:2; }
+
+
 /* Slight translucent gray cards for better separation */
 
 #vacationModal .modal-card,
