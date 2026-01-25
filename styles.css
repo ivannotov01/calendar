@@ -52,6 +52,7 @@ a{ color: rgba(255,255,255,0.9); }
 }
 .grid.gridlines-gray{ border-color: var(--gridline-gray); }
 .daycell{
+  position: relative;
   position:relative;
   border-right:1px solid var(--gridline-white);
   border-bottom:1px solid var(--gridline-white);
@@ -342,8 +343,7 @@ input.dateInput::-webkit-calendar-picker-indicator{ opacity:0.9; }
 }
 
 /* Today: highlight whole cell */
-.daycell.daycell.today{ background: none; }
-.daycell.today::before{
+.daycell.daycell.today::before{
   content:"";
   position:absolute;
   left:1px;
@@ -353,9 +353,9 @@ input.dateInput::-webkit-calendar-picker-indicator{ opacity:0.9; }
   background: rgba(180,180,180,0.18);
   border-radius:6px 6px 0 0;
   pointer-events:none;
+  z-index:1;
 }
-
-
+.daycell > *{ position: relative; z-index:2; }
 /* Slight translucent gray cards for better separation */
 
 #vacationModal .modal-card,
@@ -465,12 +465,4 @@ input.dateInput::-webkit-calendar-picker-indicator{ opacity:0.9; }
 
 
 /* --- Today highlight: top half only --- */
-.daycell.today{
-  background: linear-gradient(
-    to bottom,
-    rgba(200,200,200,0.25) 0%,
-    rgba(200,200,200,0.25) 50%,
-    transparent 50%,
-    transparent 100%
-  ) !important;
-}
+.daycell
